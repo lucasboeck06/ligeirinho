@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -21,10 +22,11 @@ func main() {
 	apiToken := os.Getenv("URBS_API_TOKEN")
 	apiUrl := os.Getenv("API_URL")
 
-	linha := "512"
+	//Definição da linha
+	codigoLinha := "512"
 
 	//Requisição GET básica
-	resp, err := http.Get(apiUrl + linha + "&c=" + apiToken) //Shape do Itamarati
+	resp, err := http.Get(apiUrl + codigoLinha + "&c=" + apiToken)
 	if err != nil {
 		log.Fatalf("Erro de rede/conexão %v\n", err)
 	}
@@ -36,15 +38,21 @@ func main() {
 	if err != nil {
 		log.Fatalf("Erro ao ler os dados do corpo %v\n", err)
 	}
-	//Converte "body" em string
+
 	bodyString := string(body)
+
+	//Criação de um slice de structs
+	var linha []pontoBruto
 
 	switch resp.StatusCode {
 	case http.StatusOK:
 		if strings.Contains(bodyString, "ERRO 404") {
 			log.Fatal("Erro lógico. Servidor retornou 200, mas temos uma página 404 como resposta")
 		} else {
-			fmt.Println(bodyString)
+			//Transforma o nosso JSON em structs, jogando pra deentro do slice
+			json.Unmarshal(body, &linha)
+			clean := normaliza(linha)
+			fmt.Println(clean)
 		}
 
 	case http.StatusNotFound:
