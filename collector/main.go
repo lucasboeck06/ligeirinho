@@ -23,7 +23,7 @@ func main() {
 	apiUrl := os.Getenv("API_URL")
 
 	//Definição da linha
-	codigoLinha := "512"
+	codigoLinha := "550"
 
 	//Requisição GET básica
 	resp, err := http.Get(apiUrl + codigoLinha + "&c=" + apiToken)
@@ -52,6 +52,7 @@ func main() {
 			//Transforma o nosso JSON em structs, jogando pra deentro do slice
 			json.Unmarshal(body, &linha)
 			clean := normaliza(linha)
+
 			fmt.Println(clean)
 		}
 
